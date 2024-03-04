@@ -8,8 +8,6 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three'
 import './EquirectangularPanoramaViewer.css'
 
-
-
 export default function EquirectangularPanoramaViewer({fileName}) {
 
     const colorMap = useLoader(TextureLoader, fileName)
@@ -19,7 +17,7 @@ export default function EquirectangularPanoramaViewer({fileName}) {
         <>
             <mesh>
                 <sphereGeometry attach="geometry" args={[800, 100, 100]} />
-                <meshBasicMaterial attach="material" map={colorMap}  side={THREE.DoubleSide} />
+                <meshBasicMaterial attach="material" map={colorMap}  side={THREE.BackSide} />
             </mesh>
         </>
     )
