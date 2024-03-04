@@ -19,14 +19,14 @@ function Controls(props) {
 export default function EquirectangularPanoramaViewer() {
     
     const colorMap = useLoader(TextureLoader, './R0010121.jpg')
-    
+    colorMap.colorSpace = 'srgb'
 
     return (
         <>
             <Controls enableZoom={true} enablePan={false} />
             <Suspense fallback={null}>
                 <mesh>
-                    <sphereGeometry attach="geometry" args={[200, 100, 100]} />
+                    <sphereGeometry attach="geometry" args={[100, 32, 32]} />
                     <meshBasicMaterial attach="material" map={colorMap} side={THREE.BackSide} />
                 </mesh>
             </Suspense>
