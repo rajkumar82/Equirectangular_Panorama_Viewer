@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <Canvas>
-        <EquirectangularPanoramaViewer></EquirectangularPanoramaViewer>
+        <EquirectangularPanoramaViewer fileName="./R0010121.jpg"></EquirectangularPanoramaViewer>
       </Canvas>
     </>
   )
