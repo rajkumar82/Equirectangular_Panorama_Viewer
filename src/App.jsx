@@ -1,5 +1,6 @@
 
 import './App.css'
+import { Canvas } from '@react-three/fiber'
 import EquirectangularPanoramaViewer from './EquirectangularPanoramaViewer'
 
 function App() {
@@ -7,7 +8,9 @@ function App() {
 
   return (
     <>
-      <EquirectangularPanoramaViewer></EquirectangularPanoramaViewer>
+      <Canvas>
+        <EquirectangularPanoramaViewer></EquirectangularPanoramaViewer>
+      </Canvas>
     </>
   )
 }

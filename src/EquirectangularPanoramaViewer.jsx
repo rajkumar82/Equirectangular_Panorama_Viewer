@@ -1,16 +1,35 @@
+/* eslint-disable react/no-unknown-property */
+
+import { useRef, Suspense } from 'react'
+import { useLoader, extend, useFrame, useThree } from '@react-three/fiber'
+import { TextureLoader } from 'three/src/loaders/TextureLoader'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import * as THREE from 'three'
 import './EquirectangularPanoramaViewer.css'
-import { Canvas } from '@react-three/fiber'
+
+extend({ OrbitControls })
+
+function Controls(props) {
+    const { camera, gl } = useThree()
+    const ref = useRef()
+    useFrame(() => ref.current.update())
+    return <orbitControls ref={ref} target={[0, 0, 0]} {...props} args={[camera, gl.domElement]} />
+}
 
 export default function EquirectangularPanoramaViewer() {
+    
+    const colorMap = useLoader(TextureLoader, './R0010121.jpg')
+    
 
     return (
         <>
-            <Canvas>
+            <Controls enableZoom={true} enablePan={false} />
+            <Suspense fallback={null}>
                 <mesh>
-                    <sphereGeometry></sphereGeometry>
-                    <meshNormalMaterial></meshNormalMaterial>
+                    <sphereGeometry attach="geometry" args={[200, 100, 100]} />
+                    <meshBasicMaterial attach="material" map={colorMap} side={THREE.BackSide} />
                 </mesh>
-            </Canvas>
+            </Suspense>
         </>
     )
 }
