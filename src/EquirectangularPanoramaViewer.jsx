@@ -4,38 +4,31 @@ import { useLoader, useFrame } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three'
-import './EquirectangularPanoramaViewer.css'
-
 import { OrbitControls } from '@react-three/drei'
-import { Html } from '@react-three/drei';
+import EditableLabel from './EditableLabel'
 
 
 export default function EquirectangularPanoramaViewer({ fileName, currentState }) {
 
 
-    useFrame((state, delta) => {
-        //console.log(delta)
+    useFrame((state, delta) => {        
         delta;
-
     })
 
     const meshRef = useRef();
-
-
+    
     const [meshes, setMeshes] = useState([]);
-
+    
     const [texts, setTexts] = useState([]);
 
     const colorMap = useLoader(TextureLoader, fileName)
     colorMap.colorSpace = 'srgb'
+
     const clickEventHandler = (event) => {
-
-
-        console.log(meshes.length);
-
+        
         if (currentState === 'blur' && event.ctrlKey) {
-            //Add a blurring mesh        
 
+            //Add a blurring mesh
             const newMeshes = [...meshes];
             newMeshes.push({ position: event.point });
             setMeshes(newMeshes);
@@ -92,12 +85,8 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
                         position={mesh.position}
                     >
                         <sphereGeometry />
-                        <meshBasicMaterial color="orange" />
-                        <Html
-
-                            wrapperClass="label">
-                            Hello World !
-                        </Html>
+                        <meshBasicMaterial color="transparent" />
+                        <EditableLabel/>
 
                     </mesh>
                 ))}
