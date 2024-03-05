@@ -7,6 +7,7 @@ import * as THREE from 'three'
 import './EquirectangularPanoramaViewer.css'
 
 import { OrbitControls } from '@react-three/drei'
+import { Html } from '@react-three/drei';
 
 
 export default function EquirectangularPanoramaViewer({ fileName, currentState }) {
@@ -21,42 +22,12 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
     const meshRef = useRef();
 
 
-    const [meshes, setMeshes] = useState([
+    const [meshes, setMeshes] = useState([]);
 
-    ]);
+    const [texts, setTexts] = useState([]);
 
     const colorMap = useLoader(TextureLoader, fileName)
     colorMap.colorSpace = 'srgb'
-
-    //const [isDragging, setIsDragging] = useState(false);
-    //const [previousMousePosition, setPreviousMousePosition] = useState([0, 0]);
-
-    // const handleMouseDown = (event) => {
-    //     setIsDragging(true);
-    //     setPreviousMousePosition([event.clientX, event.clientY]);
-    // };
-
-    // const handleMouseUp = () => {
-    //     setIsDragging(false);
-    // };
-
-    // const handleMouseMove = (event) => {
-
-
-
-    //     if (isDragging) {
-    //         const deltaMousePosition = [
-    //             event.clientX - previousMousePosition[0],
-    //             event.clientY - previousMousePosition[1]
-    //         ];
-
-    //         meshRef.current.rotation.y += deltaMousePosition[0] * 0.01;
-    //         meshRef.current.rotation.x += deltaMousePosition[1] * 0.01;
-
-    //         setPreviousMousePosition([event.clientX, event.clientY]);
-    //     }
-    // };
-
     const clickEventHandler = (event) => {
 
 
@@ -64,10 +35,16 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
 
         if (currentState === 'blur' && event.ctrlKey) {
             //Add a blurring mesh        
-            console.log(event.point);
+
             const newMeshes = [...meshes];
             newMeshes.push({ position: event.point });
             setMeshes(newMeshes);
+            return;
+        }
+        else if (currentState === 'annotate' && event.ctrlKey) {
+            const newTexts = [...texts];
+            newTexts.push({ position: event.point });
+            setTexts(newTexts);
             return;
         }
 
@@ -82,22 +59,16 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
     return (
         <>
 
-            <OrbitControls 
-            minDistance={0} // Minimum distance
-            maxDistance={80} // Maximum distance
+            <OrbitControls
+                minDistance={0} // Minimum distance
+                maxDistance={80} // Maximum distance
             />
 
             <group
 
                 ref={meshRef}
-
-                // onPointerDown={handleMouseDown}
-                // onPointerUp={handleMouseUp}
-                // onPointerMove={handleMouseMove}
                 onClick={clickEventHandler}
                 onDoubleClick={doubleClickEventHandler}
-
-
             >
 
                 <mesh>
@@ -112,6 +83,22 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
                             transmission={1}
                             roughness={0.4}
                         />
+                    </mesh>
+                ))}
+
+                {texts.map((mesh, index) => (
+                    <mesh
+                        key={index}
+                        position={mesh.position}
+                    >
+                        <sphereGeometry />
+                        <meshBasicMaterial color="orange" />
+                        <Html
+
+                            wrapperClass="label">
+                            Hello World !
+                        </Html>
+
                     </mesh>
                 ))}
 
