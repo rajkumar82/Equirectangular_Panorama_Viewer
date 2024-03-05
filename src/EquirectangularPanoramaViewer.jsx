@@ -2,12 +2,12 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
-import { OrbitControls } from '@react-three/drei'
+
 import * as THREE from 'three'
 import './EquirectangularPanoramaViewer.css'
 import { useState } from 'react'
 
-export default function EquirectangularPanoramaViewer({ fileName }) {
+export default function EquirectangularPanoramaViewer({ fileName, currentState }) {
 
     const [meshes, setMeshes] = useState([{
         position: [0, 0, 0]
@@ -20,13 +20,18 @@ export default function EquirectangularPanoramaViewer({ fileName }) {
         delta;
     })
 
+
+
     const clickEventHandler = (event) => {
-        console.log(event.point);
 
-        const newMeshes = [...meshes];
+        if (currentState === 'blur') {
+            //Add a blurring mesh        
+            //console.log(event.point);
+            const newMeshes = [...meshes];
+            newMeshes.push({ position: event.point });
+            setMeshes(newMeshes)
+        }
 
-        newMeshes.push({ position: event.point });
-        setMeshes(newMeshes)
     }
 
     const doubleClickEventHandler = (event) => {
@@ -37,7 +42,7 @@ export default function EquirectangularPanoramaViewer({ fileName }) {
 
     return (
         <>
-            <OrbitControls />
+
 
             <mesh onClick={clickEventHandler}>
                 <sphereGeometry args={[800, 100, 100]} />
@@ -48,9 +53,9 @@ export default function EquirectangularPanoramaViewer({ fileName }) {
                 <mesh key={index} position={mesh.position}>
                     <sphereGeometry args={[120, 16, 16]} />
                     <meshPhysicalMaterial
-                                transmission={1}
-                                roughness={0.4}
-                            />
+                        transmission={1}
+                        roughness={0.4}
+                    />
                 </mesh>
             ))}
         </>

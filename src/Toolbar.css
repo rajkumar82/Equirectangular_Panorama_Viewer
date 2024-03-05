@@ -1,22 +1,35 @@
+.toolbarDiv {
+    position: absolute;
+    top: 10;
+    left: 10;
+    z-index: 9999;
+}
+
 .button {
-    background-color: #555555;
-    /* Green */
+    background-color: #008CBA;
     border: none;
     color: white;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
-    margin: 4px 2px;
+    margin: 5px;
     cursor: pointer;
     padding: 8px;
     border-radius: 4px;
 }
 
-
-.toolbarDiv{
-    position: absolute;
-    top: 10;
-    left: 10;    
-    z-index: 9999;
+.button:disabled {
+    background-color: #e7e7e7;
+    border: none;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
 }
+
