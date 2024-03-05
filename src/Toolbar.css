@@ -1,0 +1,22 @@
+.button {
+    background-color: #555555;
+    /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+
+.toolbarDiv{
+    position: absolute;
+    top: 10;
+    left: 10;    
+    z-index: 9999;
+}
