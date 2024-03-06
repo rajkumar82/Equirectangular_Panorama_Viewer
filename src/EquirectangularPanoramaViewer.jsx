@@ -4,17 +4,18 @@ import { useThree, useLoader } from '@react-three/fiber'
 import React, { useRef, useState } from 'react'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three'
-//import { OrbitControls } from '@react-three/drei'
 import EditableLabel from './EditableLabel'
 import './EquirectangularPanoramaViewer.css'
 
 
 export default function EquirectangularPanoramaViewer({ fileName, currentState }) {
 
-    const { camera, gl } = useThree()    
+    const { camera, gl } = useThree()
 
     const meshRef = useRef();
     const sphereRef = useRef();
+
+
 
     // 
     //  Blur Mesh
@@ -24,6 +25,8 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
     const [blurPosition, setBlurPosition] = useState([0, 0, 0]);
     const [blurRadius, setBlurRadius] = useState(1);
     const [meshes, setMeshes] = useState([]);
+
+
 
     //
     //   Annotation
@@ -35,6 +38,16 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
     //
     const colorMap = useLoader(TextureLoader, fileName)
     colorMap.colorSpace = 'srgb'
+
+    //
+    // Mouse Move
+    //
+    const [isDragging, setIsDragging] = useState(false);
+    const [previousMousePosition, setPreviousMousePosition] = useState({
+        x: 0,
+        y: 0
+    });
+
 
 
     // Add event listener for key press
@@ -57,42 +70,38 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
         }
     }
 
-    let isDragging = false;
+
 
     const mouseDownEventHandler = (event) => {
 
-        isDragging = true;        
-        previousMousePosition = {
+        setIsDragging(true);
+        var previousMousePositionVal = {
             x: event.offsetX,
             y: event.offsetY
         };
+
+        setPreviousMousePosition(previousMousePositionVal);
+
         document.body.classList.add('pan');
 
     }
 
-    const mouseUpEventHandler = () => {        
-        isDragging = false;
+    const mouseUpEventHandler = () => {
+        setIsDragging(false);
         document.body.classList.remove('pan');
     }
 
     const mouseWheelEventHandler = (event) => {
-        
-        const delta = Math.sign(event.deltaY) * 20;
+
+        const delta = Math.sign(event.deltaY) * 10;
+
         var zPos = camera.position.z + delta;
         if (zPos < 320 && zPos > -320) {
-            camera.position.z += delta;
+            camera.position.z = zPos;
         }
+        console.log(camera.position);
+
     }
-
-    let previousMousePosition = {
-        x: 0,
-        y: 0
-    };
-
-    let deltaMove = {
-        x: 0,
-        y: 0
-    };
 
     const mouseMoveEventHandler = (event) => {
 
@@ -107,24 +116,26 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
 
         if (isDragging) {
             gl.domElement.classList.add('pan');
+
+            var deltaMove = {
+                x: event.offsetX - previousMousePosition.x,
+                y: event.offsetY - previousMousePosition.y
+            };
+
+            camera.rotation.x += deltaMove.y * 0.001;
+            camera.rotation.y += deltaMove.x * 0.001;
+
+            var previousMousePositionVal = {
+                x: event.offsetX,
+                y: event.offsetY
+            };
+            setPreviousMousePosition(previousMousePositionVal);
         }
         else {
             gl.domElement.classList.remove('pan');
-            return;
         }
 
-        deltaMove = {
-            x: event.offsetX - previousMousePosition.x,
-            y: event.offsetY - previousMousePosition.y
-        };
 
-        camera.rotation.x += deltaMove.y * 0.001;
-        camera.rotation.y += deltaMove.x * 0.001;
-
-        previousMousePosition = {
-            x: event.offsetX,
-            y: event.offsetY
-        };
     }
 
     const clickEventHandler = (event) => {
@@ -164,9 +175,9 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
                 onWheel={mouseWheelEventHandler}
             >
 
-                <mesh ref={sphereRef} position={[0,0,0]}> 
+                <mesh ref={sphereRef} position={[0, 0, 0]}>
                     <sphereGeometry args={[400, 100, 100]} />
-                    <meshBasicMaterial map={colorMap} side={THREE.DoubleSide}/>
+                    <meshBasicMaterial map={colorMap} side={THREE.DoubleSide} />
                 </mesh>
 
                 <mesh
