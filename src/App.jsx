@@ -7,9 +7,9 @@ import { useState } from 'react'
 
 export default function App() {
 
-  const [currentState,setCurrentState] = useState('none');
+  const [currentState, setCurrentState] = useState('none');
 
-  const changeState = (newState=>{
+  const changeState = (newState => {
     setCurrentState(newState);
   })
 
@@ -17,8 +17,8 @@ export default function App() {
     <>
       <Toolbar currentState={currentState} changeState={changeState}></Toolbar>
 
-      <Canvas>
-        <EquirectangularPanoramaViewer fileName="./R0010121.jpg"  currentState={currentState}></EquirectangularPanoramaViewer>
+      <Canvas camera={{ position: [0, 0, 0], fov: 80 }}>
+        <EquirectangularPanoramaViewer fileName="./R0010121.jpg" currentState={currentState}></EquirectangularPanoramaViewer>
       </Canvas>
     </>
   )

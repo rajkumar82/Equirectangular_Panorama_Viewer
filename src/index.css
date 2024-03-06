@@ -8,3 +8,8 @@ body,
   height: 100%;
   overflow: hidden;
 }
+
+
+.pan {
+  cursor: move; /* Override cursor while actively dragging */
+}

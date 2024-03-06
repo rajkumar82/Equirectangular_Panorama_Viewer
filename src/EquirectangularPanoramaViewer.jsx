@@ -1,31 +1,38 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
-import { useLoader, useFrame } from '@react-three/fiber'
+import { useThree, useLoader } from '@react-three/fiber'
 import React, { useRef, useState } from 'react'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three'
-import { OrbitControls } from '@react-three/drei'
+//import { OrbitControls } from '@react-three/drei'
 import EditableLabel from './EditableLabel'
+import './EquirectangularPanoramaViewer.css'
 
 
 export default function EquirectangularPanoramaViewer({ fileName, currentState }) {
 
-    useFrame((state, delta) => {
-        delta;
-    })
+    const { camera, gl } = useThree()    
 
     const meshRef = useRef();
+    const sphereRef = useRef();
+
+    // 
+    //  Blur Mesh
+    //    
     const blurMeshRef = useRef();
     const [isBlurVisible, setIsBlurVisible] = useState(false);
     const [blurPosition, setBlurPosition] = useState([0, 0, 0]);
     const [blurRadius, setBlurRadius] = useState(1);
-
-
-
-
     const [meshes, setMeshes] = useState([]);
+
+    //
+    //   Annotation
+    //
     const [texts, setTexts] = useState([]);
 
+    //
+    //  Texture
+    //
     const colorMap = useLoader(TextureLoader, fileName)
     colorMap.colorSpace = 'srgb'
 
@@ -50,19 +57,74 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
         }
     }
 
+    let isDragging = false;
+
+    const mouseDownEventHandler = (event) => {
+
+        isDragging = true;        
+        previousMousePosition = {
+            x: event.offsetX,
+            y: event.offsetY
+        };
+        document.body.classList.add('pan');
+
+    }
+
+    const mouseUpEventHandler = () => {        
+        isDragging = false;
+        document.body.classList.remove('pan');
+    }
+
+    const mouseWheelEventHandler = (event) => {
+        
+        const delta = Math.sign(event.deltaY) * 20;
+        var zPos = camera.position.z + delta;
+        if (zPos < 320 && zPos > -320) {
+            camera.position.z += delta;
+        }
+    }
+
+    let previousMousePosition = {
+        x: 0,
+        y: 0
+    };
+
+    let deltaMove = {
+        x: 0,
+        y: 0
+    };
+
     const mouseMoveEventHandler = (event) => {
 
         if (currentState === 'blur') {
-
-
             setBlurPosition(event.point);
             if (!isBlurVisible)
                 setIsBlurVisible(true);
+
+        }
+        else { setIsBlurVisible(false); }
+
+
+        if (isDragging) {
+            gl.domElement.classList.add('pan');
         }
         else {
-
-            setIsBlurVisible(false);
+            gl.domElement.classList.remove('pan');
+            return;
         }
+
+        deltaMove = {
+            x: event.offsetX - previousMousePosition.x,
+            y: event.offsetY - previousMousePosition.y
+        };
+
+        camera.rotation.x += deltaMove.y * 0.001;
+        camera.rotation.y += deltaMove.x * 0.001;
+
+        previousMousePosition = {
+            x: event.offsetX,
+            y: event.offsetY
+        };
     }
 
     const clickEventHandler = (event) => {
@@ -92,24 +154,19 @@ export default function EquirectangularPanoramaViewer({ fileName, currentState }
 
     return (
         <>
-
-            <OrbitControls
-                minDistance={0} // Minimum distance
-                maxDistance={80} // Maximum distance
-            />
-
             <group
-
                 ref={meshRef}
                 onClick={clickEventHandler}
                 onDoubleClick={doubleClickEventHandler}
                 onPointerMove={mouseMoveEventHandler}
-                onk
+                onPointerDown={mouseDownEventHandler}
+                onPointerUp={mouseUpEventHandler}
+                onWheel={mouseWheelEventHandler}
             >
 
-                <mesh>
-                    <sphereGeometry args={[120, 128, 128]} />
-                    <meshBasicMaterial map={colorMap} side={THREE.BackSide} />
+                <mesh ref={sphereRef} position={[0,0,0]}> 
+                    <sphereGeometry args={[400, 100, 100]} />
+                    <meshBasicMaterial map={colorMap} side={THREE.DoubleSide}/>
                 </mesh>
 
                 <mesh
